@@ -57,6 +57,7 @@ async def on_message(message):
 async def hello(ctx):
     await ctx.send(f"hello {ctx.author.mention}")
     
+    
 @bot.command()
 async def message(ctx, *, message:str):
     await ctx.channel.send(message)    
@@ -98,7 +99,6 @@ async def remove_role(ctx, *, role_name: str):
         await ctx.send(f"{ctx.author.mention} {role} role is now removed" )
     else:
         await ctx.send(f"no roles assigned {ctx.author.mention}")
-
 
 
 bot.run(token, log_handler=handler, log_level=logging.DEBUG)
