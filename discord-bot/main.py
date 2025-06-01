@@ -25,32 +25,32 @@ async def on_ready():
 async def on_member_join(member):
     await member.send(f"Welcome to the Himalayas {member.name}")
     
-@bot.event
-async def on_message(message):
-    if message.author == bot.user:
-        return
+# @bot.event
+# async def on_message(message):
+#     if message.author == bot.user:
+#         return
     
-    bastos_words = local.bastos_words
-    offensive_names = local.offensive_names
-    unathorized_words = local.unathorized_words
+#     bastos_words = local.bastos_words
+#     offensive_names = local.offensive_names
+#     unathorized_words = local.unathorized_words
 
-    content_lower = message.content.lower()
+#     content_lower = message.content.lower()
 
-    if any(word in content_lower for word in bastos_words):
-        await message.delete()
-        await message.channel.send(f"{message.author.mention} - HUWAG KANG BASTOS!!!!")
+#     if any(word in content_lower for word in bastos_words):
+#         await message.delete()
+#         await message.channel.send(f"{message.author.mention} - HUWAG KANG BASTOS!!!!")
 
-    elif any(name.lower() in content_lower for name in offensive_names):
-        await message.delete()
-        await message.channel.send(f"{message.author.mention} - BADIIING!!!!")
-        await message.channel.send("http://imgur.com/gallery/YiMUiop")    
+#     elif any(name.lower() in content_lower for name in offensive_names):
+#         await message.delete()
+#         await message.channel.send(f"{message.author.mention} - BADIIING!!!!")
+#         await message.channel.send("http://imgur.com/gallery/YiMUiop")    
     
-    elif any(name.lower() in content_lower for name in unathorized_words):
-        await message.delete()
-        await message.channel.send(f"{message.author.mention} Do you have NPASS")
-        await message.channel.send("https://i.imgur.com/UdTWT64.jpeg")    
+#     elif any(name.lower() in content_lower for name in unathorized_words):
+#         await message.delete()
+#         await message.channel.send(f"{message.author.mention} Do you have NPASS")
+#         await message.channel.send("https://i.imgur.com/UdTWT64.jpeg")    
         
-    await bot.process_commands(message)
+#     await bot.process_commands(message)
     
     
 @bot.command()
