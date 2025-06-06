@@ -1,21 +1,13 @@
 from dotenv import load_dotenv
-from discord.ext import commands
 
 import discord 
 import logging
-
 import local
 
+from .setting import config
 load_dotenv()
-token = local.DISCORD_TOKEN
 
-handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w')
-intents = discord.Intents.default()
-intents.message_content = True
-intents.members = True
-
-# This is the start bot command for discord !hello or !role
-bot = commands.Bot(command_prefix='!', intents=intents)
+bot = settings.bot
 
 @bot.event
 async def on_ready():
@@ -101,4 +93,4 @@ async def remove_role(ctx, *, role_name: str):
         await ctx.send(f"no roles assigned {ctx.author.mention}")
 
 
-bot.run(token, log_handler=handler, log_level=logging.DEBUG)
+bot.run(local.token, log_handler=handler, log_level=logging.DEBUG)
