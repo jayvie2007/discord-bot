@@ -1,13 +1,6 @@
-from dotenv import load_dotenv
-from discord.ext import commands
+from setting import config
 
-import discord 
-import logging
-
-import local
-import settings
-
-bot = settings.bot
+bot = config.bot
 
 @bot.slash_command(
   name="first_slash",
