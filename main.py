@@ -93,4 +93,4 @@ async def remove_role(ctx, *, role_name: str):
         await ctx.send(f"no roles assigned {ctx.author.mention}")
 
 
-bot.run(local.DISCORD_TOKEN, log_handler=config.handler, log_level=logging.DEBUG)
+bot.run(local.DISCORD_TOKEN, log_handler=config.handler(), log_level=logging.DEBUG)
