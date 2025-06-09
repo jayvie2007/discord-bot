@@ -93,4 +93,10 @@ async def remove_role(ctx, *, role_name: str):
         await ctx.send(f"no roles assigned {ctx.author.mention}")
 
 
+@bot.command()
+async def announcement(ctx, channel: discord.TextChannel, *, message: str):
+    allowed = discord.AllowedMentions(everyone=True, users=True, roles=True)
+    file = discord.File("images/dc47ae99-6d38-4a4f-8e18-15c06dcf4179.jpg", filename="image.jpg")
+    await channel.send(message, allowed_mentions=allowed, file=file)
+
 bot.run(local.DISCORD_TOKEN, log_handler=config.handler(), log_level=logging.DEBUG)
