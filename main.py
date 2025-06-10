@@ -46,11 +46,6 @@ async def on_member_join(member):
     
     
 @bot.command()
-async def hello(ctx):
-    await ctx.send(f"hello {ctx.author.mention}")
-    
-    
-@bot.command()
 async def message(ctx, *, message:str):
     await ctx.channel.send(message)    
     
