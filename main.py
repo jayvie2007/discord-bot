@@ -93,5 +93,10 @@ async def announcement(ctx, channel: discord.TextChannel, *, message: str):
     allowed = discord.AllowedMentions(everyone=True, users=True, roles=True)
     file = discord.File("images/dc47ae99-6d38-4a4f-8e18-15c06dcf4179.jpg", filename="image.jpg")
     await channel.send(message, allowed_mentions=allowed, file=file)
+    
+    
+@bot.tree.command(name="message", description="Send a custom message to the channel")
+async def message(interaction: discord.Interaction, *, content: str):
+    await interaction.response.send_message(content)
 
 bot.run(local.DISCORD_TOKEN, log_handler=config.handler(), log_level=logging.DEBUG)
