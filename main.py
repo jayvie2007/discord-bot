@@ -5,6 +5,7 @@ import logging
 import local
 
 from setting import config
+
 load_dotenv()
 
 bot = config.bot()
@@ -15,7 +16,10 @@ async def on_ready():
     
 @bot.event
 async def on_member_join(member):
+    channel = bot.get_channel(local.default_channel_id)
     await member.send(f"Welcome to the Himalayas {member.name}")
+    if channel:
+        await channel.send(f"Welcome to the Himalayas {member.mention}!")
     
 # @bot.event
 # async def on_message(message):
@@ -43,24 +47,14 @@ async def on_member_join(member):
 #         await message.channel.send("https://i.imgur.com/UdTWT64.jpeg")    
         
 #     await bot.process_commands(message)
+  
     
-    
+# !message #channel_name #message can also mention
 @bot.command()
-async def message(ctx, *, message:str):
-    await ctx.channel.send(message)    
-    
-    
-@bot.command()
-async def channel_message(ctx, channel: discord.TextChannel, *, message: str):
+async def message(ctx, channel: discord.TextChannel, *, message: str):
+    await ctx.message.delete()
     await channel.send(message)
-
-
-@bot.command()
-async def channel_message_everyone(ctx, channel: discord.TextChannel, *, message: str):
-    # Allow everyone, roles, and user mentions to be parsed and pinged
-    allowed = discord.AllowedMentions(everyone=True, users=True, roles=True)
-    await channel.send(message, allowed_mentions=allowed)
-
+    
 
 @bot.command()
 async def rules(ctx):
@@ -91,12 +85,17 @@ async def remove_role(ctx, *, role_name: str):
 @bot.command()
 async def announcement(ctx, channel: discord.TextChannel, *, message: str):
     allowed = discord.AllowedMentions(everyone=True, users=True, roles=True)
-    file = discord.File("images/dc47ae99-6d38-4a4f-8e18-15c06dcf4179.jpg", filename="image.jpg")
+    file = discord.File("images/triple.png", filename="triple.png")
     await channel.send(message, allowed_mentions=allowed, file=file)
     
     
 @bot.tree.command(name="message", description="Send a custom message to the channel")
 async def message(interaction: discord.Interaction, *, content: str):
     await interaction.response.send_message(content)
+    
+    
+@bot.tree.command(name="hello", description="Say hello!")
+async def hello(interaction: discord.Interaction):
+    await interaction.response.send_message(f"Hello, {interaction.user.name}!")
 
 bot.run(local.DISCORD_TOKEN, log_handler=config.handler(), log_level=logging.DEBUG)
