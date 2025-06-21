@@ -12,7 +12,14 @@ bot = config.bot()
 
 @bot.event
 async def on_ready():
-    print("Himalayas bot is now running")
+    try:
+        guild = discord.Object(id=local.default_server_id)
+        synced = await bot.tree.sync(guild=guild)
+        print(f'Synced {len(synced)} commands to guild {guild.id}')
+        print("Himalayas bot is now running")
+        
+    except Exception as e:
+        print(f' Error syncing command: {e}')
     
 @bot.event
 async def on_member_join(member):
@@ -93,9 +100,10 @@ async def announcement(ctx, channel: discord.TextChannel, *, message: str):
 async def message(interaction: discord.Interaction, *, content: str):
     await interaction.response.send_message(content)
     
-    
-@bot.tree.command(name="hello", description="Say hello!")
-async def hello(interaction: discord.Interaction):
+
+GUILD = discord.Object(id=local.default_server_id)
+@bot.tree.command(name="hello", description="Say hello!", guild=GUILD)
+async def helloTest(interaction: discord.Interaction):
     await interaction.response.send_message(f"Hello, {interaction.user.name}!")
 
 bot.run(local.DISCORD_TOKEN, log_handler=config.handler(), log_level=logging.DEBUG)
