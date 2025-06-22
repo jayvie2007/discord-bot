@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 import discord 
 import logging
 import local
-
+from discord import app_commands
 from setting import config
 
 load_dotenv()
@@ -13,14 +13,11 @@ bot = config.bot()
 @bot.event
 async def on_ready():
     try:
-        guild = discord.Object(id=local.default_server_id)
-        synced = await bot.tree.sync(guild=guild)
-        print(f'Synced {len(synced)} commands to guild {guild.id}')
-        print("Himalayas bot is now running")
-        
+        synced = await bot.tree.sync()  # Global sync
+        print(f"Globally synced {len(synced)} commands.")
     except Exception as e:
-        print(f' Error syncing command: {e}')
-    
+        print(f"Error syncing commands: {e}")
+        
 @bot.event
 async def on_member_join(member):
     channel = bot.get_channel(local.default_channel_id)
@@ -101,8 +98,7 @@ async def message(interaction: discord.Interaction, *, content: str):
     await interaction.response.send_message(content)
     
 
-GUILD = discord.Object(id=local.default_server_id)
-@bot.tree.command(name="hello", description="Say hello!", guild=GUILD)
+@bot.tree.command(name="hello", description="Say hello!")
 async def helloTest(interaction: discord.Interaction):
     await interaction.response.send_message(f"Hello, {interaction.user.name}!")
 
