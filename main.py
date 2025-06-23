@@ -94,12 +94,15 @@ async def announcement(ctx, channel: discord.TextChannel, *, message: str):
     
     
 @bot.tree.command(name="message", description="Send a custom message to the channel")
-async def message(interaction: discord.Interaction, *, content: str):
-    await interaction.response.send_message(content)
+@app_commands.describe(
+    message="The message to send",
+)
+async def send_message(
+    interaction: discord.Interaction,
+    message: str,
+):
+
+    await interaction.channel.send(message)
+    await interaction.response.send_message(f"✅ Sent message to this channel", ephemeral=True)
     
-
-@bot.tree.command(name="hello", description="Say hello!")
-async def helloTest(interaction: discord.Interaction):
-    await interaction.response.send_message(f"Hello, {interaction.user.name}!")
-
 bot.run(local.DISCORD_TOKEN, log_handler=config.handler(), log_level=logging.DEBUG)
