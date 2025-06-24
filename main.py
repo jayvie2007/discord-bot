@@ -10,6 +10,12 @@ load_dotenv()
 
 bot = config.bot()
 
+def has_allowed_role():
+    async def predicate(interaction: discord.Interaction):
+        user_roles = [role.id for role in interaction.user.roles]
+        return any(role_id in user_roles for role_id in local.ALLOWED_ROLE_IDS)
+    return app_commands.check(predicate)
+
 @bot.event
 async def on_ready():
     try:
@@ -92,7 +98,8 @@ async def announcement(ctx, channel: discord.TextChannel, *, message: str):
     file = discord.File("images/triple.png", filename="triple.png")
     await channel.send(message, allowed_mentions=allowed, file=file)
     
-    
+
+@has_allowed_role()
 @bot.tree.command(name="message", description="Send a custom message to the channel")
 @app_commands.describe(
     message="The message to send",
@@ -104,5 +111,13 @@ async def send_message(
 
     await interaction.channel.send(message)
     await interaction.response.send_message(f"✅ Sent message to this channel", ephemeral=True)
+    
+
+@send_message.error
+async def send_message_error(interaction: discord.Interaction, error):
+    if isinstance(error, app_commands.CheckFailure):
+        await interaction.response.send_message("❌ You are not allowed to use this command.", ephemeral=True)
+    else:
+        await interaction.response.send_message(f"❌ Error: {str(error)}", ephemeral=True)
     
 bot.run(local.DISCORD_TOKEN, log_handler=config.handler(), log_level=logging.DEBUG)
