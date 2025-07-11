@@ -6,6 +6,10 @@ import local
 from discord import app_commands
 from setting import config
 
+from datetime import datetime, timedelta
+import pytz
+import asyncio
+
 load_dotenv()
 
 bot = config.bot()
@@ -111,7 +115,85 @@ async def send_message(
 
     await interaction.channel.send(message)
     await interaction.response.send_message(f"✅ Sent message to this channel", ephemeral=True)
+
+
+@has_allowed_role()
+@bot.tree.command(name="reply", description="Send a reply to a custom message to the channel")
+@app_commands.describe(
+    message_id="ID of the message",  # <-- This does NOT match any parameter!
+    reply="Your message to reply"
+)
+async def send_reply(
+    interaction: discord.Interaction,
+    message_id: str,
+    reply: str
+):
+    await interaction.response.defer(ephemeral=True)
+    try:
+        msg = await interaction.channel.fetch_message(int(message_id))
+        await msg.reply(reply)
+        await interaction.followup.send("✅ Replied to the message!", ephemeral=True)
+    except discord.NotFound:
+        await interaction.followup.send("❌ Message not found.", ephemeral=True)
+    except discord.Forbidden:
+        await interaction.followup.send("❌ Missing permissions to read or reply.", ephemeral=True)
+    except Exception as e:
+        await interaction.followup.send(f"❌ Unexpected error: {e}", ephemeral=True)
+        
+        
+@has_allowed_role()
+@bot.tree.command(name="countdown", description="Countdown")
+async def countdown(interaction: discord.Interaction):
+    await interaction.response.defer(ephemeral=True)
     
+    target_timezone = pytz.timezone('Asia/Manila')
+    target_time = target_timezone.localize(datetime(datetime.now().year, 7, 15, 1, 0, 0))  # July 15, 1:00 AM
+    # target_time = target_timezone.localize(datetime(datetime.now().year, 7, 11, 15, 5, 0))  # July 15, 1:00 AM
+
+    guild = interaction.guild
+    crew_role = discord.utils.get(guild.roles, name="The Crew")
+    syndicate_role = discord.utils.get(guild.roles, name="Syndicate")
+    autobots_role = discord.utils.get(guild.roles, name="Autobots")
+
+    now = datetime.now(target_timezone)
+    if now >= target_time:
+        await interaction.response.send_message("⏰ Already done!")
+        return
+
+    embed = discord.Embed(
+        # title="📆 Test",
+        title="📆 Countdown to Automation Fest - July 15, 1:00 AM",
+        description="Calculating time remaining...",
+        color=discord.Color.blue()
+    )
+
+    countdown_message = await interaction.channel.send(embed=embed)
+
+    async def countdown_loop():
+        while True:
+            now = datetime.now(target_timezone)
+            remaining = target_time - now
+
+            if remaining.total_seconds() <= 0:
+                embed.description = "🎉 Automation Fest has arrived! Go check Steam!!"
+                # embed.description = "🎉 Test"
+                embed.color = discord.Color.green()
+                await countdown_message.edit(embed=embed)
+                # await interaction.channel.send(f"{autobots_role.mention} 🚀 Test!")
+                await interaction.followup.send(f"{crew_role.mention} {syndicate_role.mention} 🚀 Automation Fest has started!")
+                break
+
+            days = remaining.days
+            hours, remainder = divmod(remaining.seconds, 3600)
+            minutes, seconds = divmod(remainder, 60)
+
+            time_str = f"{days}d {hours}h {minutes}m {seconds}s remaining"
+            embed.description = f"🕐 {time_str}"
+            await countdown_message.edit(embed=embed)
+            await asyncio.sleep(1)
+
+    # Start the countdown loop in background
+    bot.loop.create_task(countdown_loop())
 
 @send_message.error
 async def send_message_error(interaction: discord.Interaction, error):
