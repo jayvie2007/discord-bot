@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 import discord 
 import logging
 import local
-from discord import app_commands
+from discord import app_commands, Message
 from setting import config
 
 from datetime import datetime, timedelta
@@ -74,6 +74,18 @@ async def message(ctx, channel: discord.TextChannel, *, message: str):
 async def rules(ctx):
     rules = local.rules
     await ctx.send(rules)
+    
+    
+@bot.command()
+async def update_rules(ctx):
+    channel = ctx.channel
+    message_id = 1378946017042501751
+    try:
+        message: Message = await channel.fetch_message(message_id)
+        await message.edit(content=local.rules)
+        await ctx.send("✅ Rules updated successfully.")
+    except Exception as e:
+        await ctx.send(f"⚠️ Could not update rules: {e}")
 
 
 @bot.command()
